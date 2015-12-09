@@ -188,14 +188,19 @@ class PlgSystemJoomShoppingErip extends JPlugin
 
 		$response_format = json_decode($response);
 
-		if (isset($response_format->response->errors)) {
-			//JError::raiseError(500, $response_format->response->message);
+		if (isset($response_format->errors)) {
+			//JError::raiseError(500, $response_format->message);
 			$mainframe = JFactory::getApplication();
 			$mainframe->redirect('index.php?option=com_jshopping&controller=orders&task=show&order_id='.$order_details->order_id, $response_format->message, error);
 			exit;
 		}
 		$config = JFactory::getConfig();
 		try{
+
+      $query = "INSERT INTO #__jshopping_order_history(`order_id`,`order_status_id`,`status_date_added`,`comments`) VALUES ($order_details->order_id," . (int)$args[1] . ",now(),'" . $response_format->transaction->uid . "')";
+      $db->setQuery($query);
+      $db->execute();
+
 			$return = JFactory::getMailer()->sendMail(
 			  $config->get('mailfrom'),
 				$config->get('fromname'),
