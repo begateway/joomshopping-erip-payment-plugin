@@ -16,7 +16,7 @@ if(!defined('_JEXEC')) define( '_JEXEC', 1 );
 $get_file_info  = pathinfo(__FILE__);
 $jpath = preg_replace('/(templates|modules|components|plugins)(.*)/','',$get_file_info['dirname']);
 define('JPATH_BASE',rtrim($jpath,DIRECTORY_SEPARATOR));
-require_once ( JPATH_BASE .DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php' ); 
+require_once ( JPATH_BASE .DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'defines.php' );
 require_once ( JPATH_BASE .DIRECTORY_SEPARATOR.'includes'.DIRECTORY_SEPARATOR.'framework.php' );
 
 jimport('joomla.session.session');

@@ -121,7 +121,7 @@ class PlgsystemjoomshoppingeripInstallerScript{
 								"'pm_erip'" . "," .
 								"1" . "," .
 								"1" . "," .
-								"'shop_id=\nshop_key=\napi_url=\nservice_no=\nagent=\naccount_no=\npayment_method_description=\ncompany_name=\ntree_path_email=\nreceipt_text=\nservice_text=\n'" . "," .
+								"'shop_id=\nshop_key=\napi_url=\nservice_no=\naccount_no=\npayment_method_description=\ncompany_name=\ntree_path_email=\nreceipt_text=\nservice_text=\n'" . "," .
 								"2" . "," .
 								"'0.00'" . "," .
 								"0" . "," .

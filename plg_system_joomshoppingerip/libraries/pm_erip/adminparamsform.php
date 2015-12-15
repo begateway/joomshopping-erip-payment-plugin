@@ -90,7 +90,7 @@ defined('_JEXEC') or die('Restricted access');
 
    </td>
 
- </tr> 
+ </tr>
 
  <tr>
 
@@ -106,7 +106,7 @@ defined('_JEXEC') or die('Restricted access');
 
    </td>
 
- </tr> 
+ </tr>
 
  <tr>
 
@@ -139,22 +139,6 @@ defined('_JEXEC') or die('Restricted access');
    </td>
 
  </tr>
- 
- <tr>
-
-   <td  class="key">
-
-     <?php echo JText::_('PLG_JSERIPPAYMENT_PARAMS_PAYMENT_INSTRUCTION_LABEL');?>
-
-   </td>
-
-   <td>
-
-     <input type = "text" class = "inputbox" name = "pm_params[payment_instruction]" size="45" value = "<?php echo $params['payment_instruction']?>" />
-
-   </td>
-
- </tr>  
 
 </table>
 

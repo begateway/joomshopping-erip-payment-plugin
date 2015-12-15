@@ -164,7 +164,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["email"] = $user_details->email;
 		$post_data["request"]["ip"] = $_SERVER['REMOTE_ADDR'];
 		$post_data["request"]["order_id"] = $order_details->order_id;
-		$post_data["request"]["notification_url"] = $notification_url; 
+		$post_data["request"]["notification_url"] = $notification_url;
 		$post_data["request"]["customer"]["first_name"] = $user_details->f_name;
 		$post_data["request"]["customer"]["last_name"] = $user_details->l_name;
 		$post_data["request"]["customer"]["country"] = $country;
@@ -175,7 +175,6 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["payment_method"]["type"] = "erip";
 		$post_data["request"]["payment_method"]["account_number"] = $order_details->order_id;
 		$post_data["request"]["payment_method"]["service_no"] = $payment_format['service_no'];
-		$post_data["request"]["payment_method"]["instruction"][] = $payment_format['payment_instruction'];
 		$post_data["request"]["payment_method"]["service_info"][] = $payment_format['service_text'];
 		$post_data["request"]["payment_method"]["receipt"][] = $payment_format['receipt_text'];
 
