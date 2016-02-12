@@ -23,8 +23,9 @@
   * Номер сервиса в системе ЕРИП
   * Имя компании в системе ЕРИП
   * Путь к услуге в дереве ЕРИП. Например, _Расчет (ЕРИП) -> Интернет-магазины/сервисы -> B -> bePaid.by_
-  * Информация для плательщика для печати на чеке. Данный текст будет напечатан на чеке, подтверждающем оплату
-  * Описание сервиса для плательщика. Например, _Оплата заказа_
+  * Информация для плательщика для печати на чеке. Данный текст будет напечатан на чеке, подтверждающем оплату. Например, _Спасибо за оплату заказа %s_
+  * Описание сервиса для плательщика. Например, _Оплата заказа %s_
+  * Передавать данные о покупателе в ЕРИП. Если отмечено, то данные о покупателе будут переданы в ЕРИП и будут отображены покупателю в момент подтверждения оплаты
   * нажмите _Сохранить и закрыть_
 * Модуль оплаты настроен.
 
@@ -69,8 +70,9 @@
   * Service number in ERIP
   * Company name. Your company name in ERIP
   * Tree path. Your service tree path in ERIP
-  * Receipt text. The text will be printed at a payment confirmation receipt
-  * Service text. E.g. _Order payment_
+  * Service text. E.g. _Order %s payment_
+  * Receipt text. The text will be printed at a payment confirmation receipt. E.g. _Thank you for the order %s payment_
+  * Send customer details to ERIP. If checked, customer's details will be sent to ERIP and be shown at payment confirmation page
   * click _Save & Close_
 * Now the module is configured.
 

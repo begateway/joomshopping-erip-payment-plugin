@@ -30,6 +30,9 @@ class PlgSystemJoomShoppingErip extends JPlugin
 	 */
 	public function __construct(&$subject, $config)
 	{
+		//Load language file.
+		JPlugin::loadLanguage('plg_system_joomshoppingerip', JPATH_ADMINISTRATOR);
+
 		parent::__construct($subject, $config);
 	}
 
@@ -41,9 +44,6 @@ class PlgSystemJoomShoppingErip extends JPlugin
 
 		if ($option == "com_jshopping" && $controller == "orders") {//$task == "show" &&
 
-			//Load language file.
-			JPlugin::loadLanguage('plg_system_joomshoppingerip', JPATH_ADMINISTRATOR);
-
 			$db 	= JFactory::getDBO();
 			$query 	= "UPDATE #__jshopping_order_status SET `name_en-GB` = '".JText::_('PLG_JSERIPPAYMENT_PAYMENT_OPTION')."', `name_de-DE` = '".JText::_('PLG_JSERIPPAYMENT_PAYMENT_OPTION')."' WHERE `status_code` = 'A'";
 
@@ -52,12 +52,11 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		}
 	}
 
-	public function update($args){
+	public function update(&$args){
 		jimport('joomla.filesystem.file');
 		jimport('joomla.filesystem.folder');
 		if (!JFolder::exists(JPATH_ROOT.'/components/com_jshopping')) {
-			throw new RuntimeException('JoomShopping component not found!');
-			return false;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_JOOMSHOPPING_NOT_FOUND'));
 		}
 		return $this->$args['event']($args);
 	}
@@ -65,12 +64,8 @@ class PlgSystemJoomShoppingErip extends JPlugin
 	public function onBeforeChangeOrderStatusAdmin($args){
 
 		if (!JFolder::exists(JPATH_ROOT.'/components/com_jshopping')) {
-			throw new RuntimeException('JoomShopping component not found!');
-			return false;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_JOOMSHOPPING_NOT_FOUND'));
 		}
-
-		//Load language file.
-        JPlugin::loadLanguage('plg_system_joomshoppingerip', JPATH_ADMINISTRATOR);
 
 		$db 	= JFactory::getDBO();
 		$query = $db->getQuery(true);
@@ -94,13 +89,13 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$payment_details = $db->loadObject();
 
 		if (empty($payment_details) || empty($payment_details->payment_params)) {
-			return true;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_PAYMENT_DETAILS'));
 		}
 
 		$payment_details_explode = explode("\n",$payment_details->payment_params);
 
 		if (empty($payment_details_explode)) {
-			return true;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_PAYMENT_PARAMS'));
 		}
 
 		$payment_format = array();
@@ -112,7 +107,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		}
 
 		if (empty($payment_format)) {
-			return true;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_PAYMENT_PARAMS_EMPTY'));
 		}
 
 		$query->clear();
@@ -123,7 +118,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$order_details = $db->loadObject();
 
 		if (empty($order_details)) {
-			return true;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_ORDER_DETAILS'));
 		}
 
 		$query->clear();
@@ -134,7 +129,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$user_details = $db->loadObject();
 
 		if (empty($user_details)) {
-			return true;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_USER_DETAILS'));
 		}
 
 		$query->clear();
@@ -145,7 +140,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$joomla_user_details = $db->loadObject();
 
 		if (empty($joomla_user_details)) {
-			return true;
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_JOOMLA_USER_DETAILS'));
 		}
 
 		$countries = JshopHelpersSelectOptions::getCountrys();
@@ -165,20 +160,22 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["ip"] = $_SERVER['REMOTE_ADDR'];
 		$post_data["request"]["order_id"] = $order_details->order_id;
 		$post_data["request"]["notification_url"] = $notification_url;
-		$post_data["request"]["customer"]["first_name"] = $user_details->f_name;
-		$post_data["request"]["customer"]["last_name"] = $user_details->l_name;
-		$post_data["request"]["customer"]["country"] = $country;
-		$post_data["request"]["customer"]["city"] = $user_details->city;
-		$post_data["request"]["customer"]["zip"] = $user_details->zip;
-		$post_data["request"]["customer"]["address"] = $user_details->street . " " . $user_details->street_nr;
-		$post_data["request"]["customer"]["phone"] = $user_details->phone;
 		$post_data["request"]["payment_method"]["type"] = "erip";
 		$post_data["request"]["payment_method"]["account_number"] = $order_details->order_id;
 		$post_data["request"]["payment_method"]["service_no"] = $payment_format['service_no'];
-		$post_data["request"]["payment_method"]["service_info"][] = $payment_format['service_text'];
-		$post_data["request"]["payment_method"]["receipt"][] = $payment_format['receipt_text'];
+		$post_data["request"]["payment_method"]["service_info"][] = sprintf($payment_format['service_text'], $order_details->order_id);
+		$post_data["request"]["payment_method"]["receipt"][] = sprintf($payment_format['receipt_text'], $order_details->order_id);
 
-		//$post_data_format = http_build_query($post_data);
+    if ($payment_format['customer_data'] == 1) {
+  		$post_data["request"]["customer"]["first_name"] = $user_details->f_name;
+  		$post_data["request"]["customer"]["last_name"] = $user_details->l_name;
+  		$post_data["request"]["customer"]["country"] = $country;
+  		$post_data["request"]["customer"]["city"] = $user_details->city;
+  		$post_data["request"]["customer"]["zip"] = $user_details->zip;
+  		$post_data["request"]["customer"]["address"] = $user_details->street . " " . $user_details->street_nr;
+  		$post_data["request"]["customer"]["phone"] = $user_details->phone;
+    }
+
 		$post_data_format = json_encode($post_data, JSON_NUMERIC_CHECK);
 
 		$this->api_url = strstr($payment_format['api_url'],"http") ? $payment_format['api_url'] : "https://".$payment_format['api_url']."/beyag/payments";
@@ -188,11 +185,18 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$response_format = json_decode($response);
 
 		if (isset($response_format->errors)) {
-			//JError::raiseError(500, $response_format->message);
-			$mainframe = JFactory::getApplication();
-			$mainframe->redirect('index.php?option=com_jshopping&controller=orders&task=show&order_id='.$order_details->order_id, $response_format->message, error);
-			exit;
+      $this->report_error($order_details->order_id, $response_format->message);
 		}
+
+    if (isset($response_format->transaction) &&
+        isset($response_format->transaction->status)) {
+          if ($response_format->transaction->status == 'pending') {
+            JFactory::getApplication()->enqueueMessage(JText::_('PLG_JSERIPPAYMENT_PAYMENT_REQUEST'));
+          } else {
+            $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_PAYMENT_REQUEST'));
+          }
+        }
+
 		$config = JFactory::getConfig();
 		try{
 
@@ -217,10 +221,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 			);
 		}
 		catch(RuntimeException $e){
-			$mainframe = JFactory::getApplication();
-			$mainframe->redirect('index.php?option=com_jshopping&controller=orders&task=show&order_id='.$order_details->order_id, $e->getMessage(), error);
-			exit;
-			//JError::raiseWarning(500, $e->getMessage());
+      $this->report_error($order_details->order_id, $e->getMessage());
 		}
 		return true;
 	}
@@ -242,6 +243,17 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		curl_setopt($ch, CURLOPT_USERPWD, "$shop_id:$shop_key");
 		$response = curl_exec($ch);
 
+    if (curl_errno($ch)) {
+      $response = '{ "message" : "cURL: ' . curl_error($ch) . '", "errors":"cURL" }';
+    }
+    curl_close($ch);
+
 		return $response;
 	}
+
+  protected function report_error($order_id, $message) {
+			$mainframe = JFactory::getApplication();
+			$mainframe->redirect('index.php?option=com_jshopping&controller=orders&task=show&order_id='.$order_id, $message, error);
+			exit;
+  }
 }
