@@ -122,26 +122,6 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		}
 
 		$query->clear();
-		$query->select('u.*')
-			->from($db->quoteName('#__jshopping_users') . ' AS u')
-			->where($db->quoteName('u.user_id') . ' = ' . (int) $order_details->user_id);
-		$db->setQuery($query);
-		$user_details = $db->loadObject();
-
-		if (empty($user_details)) {
-      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_USER_DETAILS'));
-		}
-
-		$query->clear();
-		$query->select('ju.*')
-			->from($db->quoteName('#__users') . ' AS ju')
-			->where($db->quoteName('ju.id') . ' = ' . (int) $order_details->user_id);
-		$db->setQuery($query);
-		$joomla_user_details = $db->loadObject();
-
-		if (empty($joomla_user_details)) {
-      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_JOOMLA_USER_DETAILS'));
-		}
 
 		$countries = JshopHelpersSelectOptions::getCountrys();
 
@@ -156,7 +136,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["amount"] = $order_details->order_total;
 		$post_data["request"]["currency"] = $order_details->currency_code_iso;
 		$post_data["request"]["description"] = JText::_('PLG_JSERIPPAYMENT_API_CALL_ORDER').$order_details->order_id;
-		$post_data["request"]["email"] = $user_details->email;
+		$post_data["request"]["email"] = $order_details->email;
 		$post_data["request"]["ip"] = $_SERVER['REMOTE_ADDR'];
 		$post_data["request"]["order_id"] = $order_details->order_id;
 		$post_data["request"]["notification_url"] = $notification_url;
@@ -167,13 +147,13 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["payment_method"]["receipt"][] = sprintf($payment_format['receipt_text'], $order_details->order_id);
 
     if ($payment_format['customer_data'] == 1) {
-  		$post_data["request"]["customer"]["first_name"] = $user_details->f_name;
-  		$post_data["request"]["customer"]["last_name"] = $user_details->l_name;
+  		$post_data["request"]["customer"]["first_name"] = $order_details->f_name;
+  		$post_data["request"]["customer"]["last_name"] = $order_details->l_name;
   		$post_data["request"]["customer"]["country"] = $country;
-  		$post_data["request"]["customer"]["city"] = $user_details->city;
-  		$post_data["request"]["customer"]["zip"] = $user_details->zip;
-  		$post_data["request"]["customer"]["address"] = $user_details->street . " " . $user_details->street_nr;
-  		$post_data["request"]["customer"]["phone"] = $user_details->phone;
+  		$post_data["request"]["customer"]["city"] = $order_details->city;
+  		$post_data["request"]["customer"]["zip"] = $order_details->zip;
+  		$post_data["request"]["customer"]["address"] = $order_details->street . " " . $order_details->street_nr;
+  		$post_data["request"]["customer"]["phone"] = $order_details->phone;
     }
 
 		$post_data_format = json_encode($post_data, JSON_NUMERIC_CHECK);
@@ -207,10 +187,10 @@ class PlgSystemJoomShoppingErip extends JPlugin
 			$return = JFactory::getMailer()->sendMail(
 			  $config->get('mailfrom'),
 				$config->get('fromname'),
-				$joomla_user_details->email,
+				$order_details->email,
 			  JText::_('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION_SUBJECT'),
 				JText::sprintf('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION',
-			    $user_details->f_name . " " . $user_details->l_name,
+			    $order_details->f_name . " " . $order_details->l_name,
 					$order_details->order_id,
 					JURI::root(),
 					$payment_format['company_name'],
