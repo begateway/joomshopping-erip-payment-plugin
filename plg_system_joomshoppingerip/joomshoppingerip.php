@@ -67,6 +67,8 @@ class PlgSystemJoomShoppingErip extends JPlugin
       $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_JOOMSHOPPING_NOT_FOUND'));
 		}
 
+		$config = JFactory::getConfig();
+
 		$db 	= JFactory::getDBO();
 		$query = $db->getQuery(true);
 
@@ -134,19 +136,25 @@ class PlgSystemJoomShoppingErip extends JPlugin
 
     $order_number = ltrim($order_details->order_number,'0');
 
+    $email = $order_details->email;
+
+    if (strlen(trim($email)) == 0 ) {
+      $email = $config->get('mailfrom');
+    }
+
 		$post_data=array();
 		$post_data["request"]["amount"] = $order_details->order_total;
 		$post_data["request"]["currency"] = $order_details->currency_code_iso;
 		$post_data["request"]["description"] = JText::_('PLG_JSERIPPAYMENT_API_CALL_ORDER').$order_details->order_id;
-		$post_data["request"]["email"] = $order_details->email;
+		$post_data["request"]["email"] = $email;
 		$post_data["request"]["ip"] = $_SERVER['REMOTE_ADDR'];
 		$post_data["request"]["order_id"] = $order_details->order_id;
 		$post_data["request"]["notification_url"] = $notification_url;
 		$post_data["request"]["payment_method"]["type"] = "erip";
 		$post_data["request"]["payment_method"]["account_number"] = $order_number;
 		$post_data["request"]["payment_method"]["service_no"] = $payment_format['service_no'];
-		$post_data["request"]["payment_method"]["service_info"][] = sprintf($payment_format['service_text'], $order_details->order_id);
-		$post_data["request"]["payment_method"]["receipt"][] = sprintf($payment_format['receipt_text'], $order_details->order_id);
+		$post_data["request"]["payment_method"]["service_info"][] = sprintf($payment_format['service_text'], $order_number);
+		$post_data["request"]["payment_method"]["receipt"][] = sprintf($payment_format['receipt_text'], $order_number);
 
     if ($payment_format['customer_data'] == 1) {
   		$post_data["request"]["customer"]["first_name"] = $order_details->f_name;
@@ -179,8 +187,6 @@ class PlgSystemJoomShoppingErip extends JPlugin
           }
         }
 
-		$config = JFactory::getConfig();
-
 		try{
 
       $query = "INSERT INTO #__jshopping_order_history(`order_id`,`order_status_id`,`status_date_added`,`comments`) VALUES ($order_details->order_id," . (int)$args[1] . ",now(),'" . $response_format->transaction->uid . "')";
@@ -194,7 +200,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 			  JText::_('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION_SUBJECT'),
 				JText::sprintf('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION',
 			    $order_details->f_name . " " . $order_details->l_name,
-					$order_details->order_id,
+					$order_details->order_number,
 					$config->get('sitename'),
 					$payment_format['company_name'],
 					$payment_format['tree_path_email'],
