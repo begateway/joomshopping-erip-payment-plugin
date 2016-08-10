@@ -9,6 +9,8 @@
 
 defined('JPATH_BASE') or die;
 
+require_once __DIR__ . '/libraries/Money.php';
+
 /**
  * Plugin class for JoomShoppingErip handling.
  *
@@ -142,8 +144,12 @@ class PlgSystemJoomShoppingErip extends JPlugin
       $email = $config->get('mailfrom');
     }
 
+    $money = new \beGateway\Money;
+    $money->setAmount($order_details->order_total);
+    $money->setCurrency($order_details->currency_code_iso);
+
 		$post_data=array();
-		$post_data["request"]["amount"] = $order_details->order_total;
+		$post_data["request"]["amount"] = $money->getCents();
 		$post_data["request"]["currency"] = $order_details->currency_code_iso;
 		$post_data["request"]["description"] = JText::_('PLG_JSERIPPAYMENT_API_CALL_ORDER').$order_details->order_id;
 		$post_data["request"]["email"] = $email;
