@@ -9,7 +9,8 @@
 
 defined('JPATH_BASE') or die;
 
-require_once __DIR__ . '/libraries/Money.php';
+if (!class_exists('\beGateway\Settings'))
+  require_once __DIR__ . '/libraries/begateway-api-php/lib/beGateway.php';
 
 /**
  * Plugin class for JoomShoppingErip handling.

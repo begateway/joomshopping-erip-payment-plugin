@@ -1,0 +1,3 @@
+[submodule "plg_system_joomshoppingerip/libraries/begateway-api-php"]
+	path = plg_system_joomshoppingerip/libraries/begateway-api-php
+	url = https://github.com/beGateway/begateway-api-php.git
