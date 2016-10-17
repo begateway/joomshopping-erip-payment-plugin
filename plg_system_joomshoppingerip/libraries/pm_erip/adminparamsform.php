@@ -79,6 +79,22 @@ defined('_JEXEC') or die('Restricted access');
      <input type = "checkbox" class = "checkbox" name = "pm_params[customer_data]" value="1" <?php echo($params['customer_data'] == 1 ? 'checked' : '')?> />
    </td>
  </tr>
+ <tr>
+   <td  class="key">
+     <?php echo JText::_('PLG_JSERIPPAYMENT_PARAMS_AUTO_LABEL');?>
+   </td>
+   <td>
+     <input type = "checkbox" class = "checkbox" name = "pm_params[auto]" value="1" <?php echo($params['auto'] == 1 ? 'checked' : '')?> />
+   </td>
+ </tr>
+ <tr>
+   <td  class="key">
+     <?php echo JText::_('PLG_JSERIPPAYMENT_PARAMS_INSTRUCTION_LABEL');?>
+   </td>
+   <td>
+     <textarea name = "pm_params[instruction]"><?php echo $params['instruction']; ?></textarea>
+   </td>
+ </tr>
 </table>
 </fieldset>
 </div>
