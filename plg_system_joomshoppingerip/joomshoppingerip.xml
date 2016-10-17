@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail></authorEmail>
 	<authorUrl></authorUrl>
-	<version>8.3.0</version>
+	<version>9.0.0</version>
 	<description>This system plugin creates JoomShopping ERIP payment option.</description>
 	<!-- Runs on install/uninstall/update; New in 1.6 -->
 	<scriptfile>install_uninstall.php</scriptfile>

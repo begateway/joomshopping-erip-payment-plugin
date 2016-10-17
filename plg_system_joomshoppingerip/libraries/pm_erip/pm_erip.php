@@ -35,9 +35,14 @@ class pm_erip extends PaymentRoot{
 			echo JText::_('PLG_JSERIPPAYMENT_ORDER_ERROR');
 		}
 
-    $instruction = $pmconfigs['instruction'];
-    $instruction = str_replace('#TABS#', $pmconfigs['tree_path_email'], $instruction);
-    $instruction = str_replace('#ORDER_ID#', $order->order_id, $instruction);
-    echo $instruction;
+    if ($pmconfigs['auto'] == '1') {
+      $instruction = JText::_('PLG_JSERIPPAYMENT_ERIP_INSTRUCTION');
+      $instruction = str_replace('#TABS#', $pmconfigs['tree_path_email'], $instruction);
+      $instruction = str_replace('#ORDER_ID#', $order->order_id, $instruction);
+
+      echo nl2br($instruction);
+    } else {
+      echo nl2br(JText::_('PLG_JSERIPPAYMENT_ORDER_CONFIRMATION'));
+    }
 	}
 }
