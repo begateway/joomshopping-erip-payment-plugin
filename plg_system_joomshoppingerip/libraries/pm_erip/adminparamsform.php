@@ -36,6 +36,14 @@ defined('_JEXEC') or die('Restricted access');
      <input type = "text" class = "inputbox" name = "pm_params[service_no]" size="45" value = "<?php echo $params['service_no']?>" />
    </td>
  </tr>
+ <tr>
+   <td  class="key">
+     <?php echo JText::_('PLG_JSERIPPAYMENT_PARAMS_EXPIRED_AT');?>
+   </td>
+   <td>
+     <input type = "text" class = "inputbox" name = "pm_params[expired_at]" size="45" value = "<?php echo $params['expired_at']?>" />
+   </td>
+ </tr>
 
  <tr>
    <td  class="key">
@@ -77,6 +85,14 @@ defined('_JEXEC') or die('Restricted access');
    </td>
    <td>
      <input type = "checkbox" class = "checkbox" name = "pm_params[customer_data]" value="1" <?php echo($params['customer_data'] == 1 ? 'checked' : '')?> />
+   </td>
+ </tr>
+ <tr>
+   <td  class="key">
+     <?php echo JText::_('PLG_JSERIPPAYMENT_PARAMS_AUTO_LABEL');?>
+   </td>
+   <td>
+     <input type = "checkbox" class = "checkbox" name = "pm_params[auto]" value="1" <?php echo($params['auto'] == 1 ? 'checked' : '')?> />
    </td>
  </tr>
 </table>
