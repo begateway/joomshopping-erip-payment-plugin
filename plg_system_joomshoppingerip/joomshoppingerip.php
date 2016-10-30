@@ -149,6 +149,12 @@ class PlgSystemJoomShoppingErip extends JPlugin
     $money->setAmount($order_details->order_total);
     $money->setCurrency($order_details->currency_code_iso);
 
+    $expired_at = null;
+    if (!empty($payment_format['expired_at'])) {
+      $expired_at = intval($payment_format['expired_at']);
+      $expired_at = date("Y-m-d", ($expired_at+1)*24*3600 + time()) . "T00:00:00+03:00";
+    }
+
 		$post_data=array();
 		$post_data["request"]["amount"] = $money->getCents();
 		$post_data["request"]["currency"] = $order_details->currency_code_iso;
@@ -157,6 +163,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["ip"] = $_SERVER['REMOTE_ADDR'];
 		$post_data["request"]["order_id"] = $order_details->order_id;
 		$post_data["request"]["notification_url"] = $notification_url;
+		$post_data["request"]["exipred_at"] = $expired_at;
 		$post_data["request"]["payment_method"]["type"] = "erip";
 		$post_data["request"]["payment_method"]["account_number"] = $order_number;
 		$post_data["request"]["payment_method"]["service_no"] = $payment_format['service_no'];
@@ -186,13 +193,12 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		}
 
     if (isset($response_format->transaction) &&
-        isset($response_format->transaction->status)) {
-          if ($response_format->transaction->status == 'pending') {
-            JFactory::getApplication()->enqueueMessage(JText::_('PLG_JSERIPPAYMENT_PAYMENT_REQUEST'));
-          } else {
-            $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_PAYMENT_REQUEST'));
-          }
-        }
+      isset($response_format->transaction->status) &&
+      $response_format->transaction->status == 'pending') {
+        JFactory::getApplication()->enqueueMessage(JText::_('PLG_JSERIPPAYMENT_PAYMENT_REQUEST'));
+    } else {
+      $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_ERROR_PAYMENT_REQUEST'));
+    }
 
 		try{
 
@@ -200,21 +206,28 @@ class PlgSystemJoomShoppingErip extends JPlugin
       $db->setQuery($query);
       $db->execute();
 
-			$return = JFactory::getMailer()->sendMail(
-			  $config->get('mailfrom'),
-				$config->get('fromname'),
-				$order_details->email,
-			  JText::_('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION_SUBJECT'),
-				JText::sprintf('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION',
-			    $order_details->f_name . " " . $order_details->l_name,
-					$order_details->order_number,
-					$config->get('sitename'),
-					$payment_format['company_name'],
-					$payment_format['tree_path_email'],
-					$payment_format['tree_path_email'],
-					$order_number
-				)
+      $instruction = JText::sprintf('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION',
+		    $order_details->f_name . " " . $order_details->l_name,
+				$order_details->order_number,
+				$config->get('sitename'),
+				$payment_format['company_name'],
+				$payment_format['tree_path_email'],
+				$payment_format['tree_path_email'],
+				$order_number
 			);
+
+
+      if (!empty($order_details->email)) {
+  			$return = JFactory::getMailer()->sendMail(
+  			  $config->get('mailfrom'),
+  				$config->get('fromname'),
+  				$order_details->email,
+  			  JText::_('PLG_JSERIPPAYMENT_EMAIL_INSTRUCTION_SUBJECT'),
+          $instruction
+  			);
+      } elseif (JFactory::getApplication()->isAdmin()) {
+        $this->report_error($order_details->order_id, JText::_('PLG_JSERIPPAYMENT_NO_USER_EMAIL'), notice);
+      }
 		}
 		catch(RuntimeException $e){
       $this->report_error($order_details->order_id, $e->getMessage());
@@ -239,7 +252,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		curl_setopt($ch, CURLOPT_USERPWD, "$shop_id:$shop_key");
 		$response = curl_exec($ch);
 
-    if (curl_errno($ch)) {
+    if (curl_errno($ch) > 0) {
       $response = '{ "message" : "cURL: ' . curl_error($ch) . '", "errors":"cURL" }';
     }
     curl_close($ch);
@@ -247,9 +260,14 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		return $response;
 	}
 
-  protected function report_error($order_id, $message) {
+  protected function report_error($order_id, $message, $level = error) {
 			$mainframe = JFactory::getApplication();
-			$mainframe->redirect('index.php?option=com_jshopping&controller=orders&task=show&order_id='.$order_id, $message, error);
-			exit;
+      if ($mainframe->isAdmin()) {
+  			$mainframe->redirect('index.php?option=com_jshopping&controller=orders&task=show&order_id='.$order_id, $message, $level);
+      } else {
+  			$mainframe->redirect('index.php/shopping/checkout/step5', $message, $level);
+
+      }
+			die;
   }
 }
