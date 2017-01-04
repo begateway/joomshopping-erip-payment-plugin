@@ -7,7 +7,7 @@
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail></authorEmail>
 	<authorUrl></authorUrl>
-	<version>9.0.0</version>
+	<version>9.0.1</version>
 	<description>This system plugin creates JoomShopping ERIP payment option.</description>
 	<!-- Runs on install/uninstall/update; New in 1.6 -->
 	<scriptfile>install_uninstall.php</scriptfile>
@@ -18,9 +18,9 @@
 		<folder>libraries</folder>
 	</files>
 	<languages>
-		<language tag="en-GB">en-GB.plg_system_joomshoppingerip.ini</language>
-		<language tag="en-GB">en-GB.plg_system_joomshoppingerip.sys.ini</language>
-		<language tag="ru-RU">ru-RU.plg_system_joomshoppingerip.ini</language>
-		<language tag="ru-RU">ru-RU.plg_system_joomshoppingerip.sys.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_system_joomshoppingerip.ini</language>
+    <language tag="en-GB">language/en-GB/en-GB.plg_system_joomshoppingerip.sys.ini</language>
+    <language tag="ru-RU">language/ru-RU/ru-RU.plg_system_joomshoppingerip.ini</language>
+    <language tag="ru-RU">language/ru-RU/ru-RU.plg_system_joomshoppingerip.sys.ini</language>
 	</languages>
 </extension>
