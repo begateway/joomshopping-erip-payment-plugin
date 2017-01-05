@@ -128,12 +128,6 @@ class PlgSystemJoomShoppingErip extends JPlugin
 
 		$query->clear();
 
-		$countries = JshopHelpersSelectOptions::getCountrys();
-
-		$_country = JTable::getInstance('country', 'jshop');
-		$_country->load($order_details->country);
-		$country = $_country->country_code_2;
-
     $notification_url = JURI::root()."plugins/system/joomshoppingerip/libraries/callback.php";
 		$notification_url = str_replace('carts.local','webhook.begateway.com:8443', $notification_url);
 
@@ -171,6 +165,11 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["payment_method"]["receipt"][] = sprintf($payment_format['receipt_text'], $order_number);
 
     if ($payment_format['customer_data'] == 1) {
+  		$countries = JshopHelpersSelectOptions::getCountrys();
+
+  		$_country = JTable::getInstance('country', 'jshop');
+  		$_country->load($order_details->country);
+  		$country = $_country->country_code_2;
   		$post_data["request"]["customer"]["first_name"] = $order_details->f_name;
   		$post_data["request"]["customer"]["last_name"] = $order_details->l_name;
   		$post_data["request"]["customer"]["country"] = $country;
