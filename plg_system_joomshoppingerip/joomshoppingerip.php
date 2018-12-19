@@ -9,8 +9,7 @@
 
 defined('JPATH_BASE') or die;
 
-if (!class_exists('\beGateway\Settings'))
-  require_once __DIR__ . '/libraries/begateway-api-php/lib/beGateway.php';
+require_once __DIR__ . '/libraries/begateway-api-php/lib/BeGateway.php';
 
 /**
  * Plugin class for JoomShoppingErip handling.
@@ -139,7 +138,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
       $email = $config->get('mailfrom');
     }
 
-    $money = new \beGateway\Money;
+    $money = new \BeGateway\Money;
     $money->setAmount($order_details->order_total);
     $money->setCurrency($order_details->currency_code_iso);
 
