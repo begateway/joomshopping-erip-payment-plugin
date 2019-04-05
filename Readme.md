@@ -39,7 +39,7 @@
 
 Протестировано и разработано для JoomShopping 4.11.0
 
-Требуется PHP 5.3+
+Требуется PHP 5.4+
 
 ### Тестовые данные
 
@@ -87,7 +87,7 @@ customer will receive an email with instructions how to pay.
 
 Tested and developed with JoomShopping 4.11.0
 
-PHP 5.3+ is required
+PHP 5.4+ is required
 
 ### Test data
 
