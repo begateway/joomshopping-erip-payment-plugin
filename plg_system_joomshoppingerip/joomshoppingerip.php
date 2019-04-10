@@ -164,7 +164,6 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		$post_data["request"]["payment_method"]["receipt"][] = sprintf($payment_format['receipt_text'], $order_number);
 
     if ($payment_format['customer_data'] == 1) {
-  		$countries = JshopHelpersSelectOptions::getCountrys();
 
   		$_country = JTable::getInstance('country', 'jshop');
   		$_country->load($order_details->country);
