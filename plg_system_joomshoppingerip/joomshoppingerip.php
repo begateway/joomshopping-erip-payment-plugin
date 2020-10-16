@@ -60,7 +60,7 @@ class PlgSystemJoomShoppingErip extends JPlugin
 		if (!JFolder::exists(JPATH_ROOT.'/components/com_jshopping')) {
       $this->report_error((int)$args[0], JText::_('PLG_JSERIPPAYMENT_JOOMSHOPPING_NOT_FOUND'));
 		}
-		return $this->$args['event']($args);
+		return $this->{$args['event']}($args);
 	}
 
 	public function onBeforeChangeOrderStatusAdmin($args){

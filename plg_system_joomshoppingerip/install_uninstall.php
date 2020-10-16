@@ -4,42 +4,48 @@ defined('_JEXEC') or die('Restricted access');
  * Install Script file of joomshoppingerip component
 */
 
-class PlgsystemjoomshoppingeripInstallerScript{
+class PlgsystemjoomshoppingeripInstallerScript {
 	/**
 	 * method to install the component
 	 *
 	 * @return void
 	 */
 
-	function install($parent){		//$db 	= JFactory::getDBO();
+	function install($parent){
+    //$db 	= JFactory::getDBO();
 		//$query	= $db->getQuery(true);
 		//$parent->getParent()->setRedirectURL('index.php?option=com_jslearn');
 	}
 
-	/**	 * method to uninstall the component
+	/**
+   * method to uninstall the component
 	 *
 	 * @return void
 	 */
 
-	function uninstall($parent){		//$db 	= JFactory::getDBO();
+	function uninstall($parent){
+    //$db 	= JFactory::getDBO();
 		//$query	= $db->getQuery(true);
 
-		if (JFolder::exists(JPATH_ROOT.'/components/com_jshopping/payments/pm_erip')) {			JFolder::delete(JPATH_ROOT.'/components/com_jshopping/payments/pm_erip');
-
-		}
-		$db 	= JFactory::getDBO();		$query = $db->getQuery(true);
+		if (JFolder::exists(JPATH_ROOT.'/components/com_jshopping/payments/pm_erip')) {
+      JFolder::delete(JPATH_ROOT.'/components/com_jshopping/payments/pm_erip');
+		}
+    $db 	= JFactory::getDBO();
+    $query = $db->getQuery(true);
 
 		$query->clear();
-		$query->delete($db->quoteName('#__jshopping_payment_method'))			->where($db->quoteName('scriptname') . ' = "pm_erip"');
+		$query->delete($db->quoteName('#__jshopping_payment_method'))
+    			->where($db->quoteName('scriptname') . ' = "pm_erip"');
 		$db->setQuery($query);
 
-		try		{
+		try {
 			$db->execute();
 		}
 		catch (RuntimeException $e)
 		{
 
-		}	}
+		}
+  }
 
 	/**	 * method to update the component
 	 *
@@ -51,12 +57,13 @@ class PlgsystemjoomshoppingeripInstallerScript{
 		//echo '<p>' . JText::_('COM_JSLEARN_UPDATE_TEXT') . '</p>';
 	}
 
-	/**	 * method to run before an install/update/uninstall method
+	/**
+   * method to run before an install/update/uninstall method
 	 *
 	 * @return void
 	 */
 
-	function preflight($type, $parent)	{
+	function preflight($type, $parent){
 		// $parent is the class calling this method
 		// $type is the type of change (install, update or discover_install)
 		if ($type == 'install' || $type == 'update') {
@@ -66,12 +73,13 @@ class PlgsystemjoomshoppingeripInstallerScript{
 		}
 	}
 
-	/**	 * method to run after an install/update/uninstall method
+	/**
+   * method to run after an install/update/uninstall method
 	 *
 	 * @return void
 	 */
 
-	function postflight($type, $parent)	{
+	function postflight($type, $parent) {
 		// $parent is the class calling this method
 		// $type is the type of change (install, update or discover_install)
 		if ($type == 'install' || $type == 'update') {
@@ -81,16 +89,19 @@ class PlgsystemjoomshoppingeripInstallerScript{
 			$move_folder = JFolder::move(JPATH_ROOT.'/plugins/system/joomshoppingerip/libraries/pm_erip',JPATH_ROOT.'/components/com_jshopping/payments/pm_erip');
 			if ($move_folder === true) {
 
-				$db 	= JFactory::getDBO();				$query = $db->getQuery(true);
+				$db 	= JFactory::getDBO();
+        $query = $db->getQuery(true);
 
 				$query->clear();
-				$query->select($db->quoteName('p.payment_id'))					->from($db->quoteName('#__jshopping_payment_method') . ' AS p')
-					->where($db->quoteName('p.scriptname') . ' = "pm_erip"');
+				$query->select($db->quoteName('p.payment_id'))
+              ->from($db->quoteName('#__jshopping_payment_method') . ' AS p')
+					    ->where($db->quoteName('p.scriptname') . ' = "pm_erip"');
 
 				$db->setQuery($query);
 				$existing_connection = $db->loadResult();
 				if (!$existing_connection) {
-					$query->clear();					$query->insert('#__jshopping_payment_method')
+					$query->clear();
+          $query->insert('#__jshopping_payment_method')
 						->columns(
 							array(
 								$db->quoteName('payment_id'),
@@ -137,7 +148,7 @@ class PlgsystemjoomshoppingeripInstallerScript{
 							);
 
 					$db->setQuery($query);
-					try					{
+					try{
 						$db->execute();
 					}
 					catch (RuntimeException $e)
@@ -146,15 +157,17 @@ class PlgsystemjoomshoppingeripInstallerScript{
 					}
         }
 
-				$query->clear();				$query->select($db->quoteName('os.status_id'))
-					->from($db->quoteName('#__jshopping_order_status') . ' AS os')
-					->where($db->quoteName('os.status_code') . ' = "A"');
+				$query->clear();
+        $query->select($db->quoteName('os.status_id'))
+					    ->from($db->quoteName('#__jshopping_order_status') . ' AS os')
+					    ->where($db->quoteName('os.status_code') . ' = "A"');
 
 				$db->setQuery($query);
 
 				$existing_order_status = $db->loadResult();
 				if (!$existing_order_status) {
-					$query->clear();					$query->insert('#__jshopping_order_status')
+					$query->clear();
+          $query->insert('#__jshopping_order_status')
 						->columns(
 							array(
 								$db->quoteName('status_id'),
@@ -171,7 +184,7 @@ class PlgsystemjoomshoppingeripInstallerScript{
   					);
 
 					$db->setQuery($query);
-					try					{
+					try{
 						$db->execute();
 					}
 					catch (RuntimeException $e)
@@ -179,7 +192,18 @@ class PlgsystemjoomshoppingeripInstallerScript{
 						throw new RuntimeException('Erip order status can not be created!<br/>'.$e->getMessage());
 					}
 				}
-        # update to have russian translation        $query->clear();        $query->update($db->quoteName('#__jshopping_order_status'))          ->set($db->quoteName('name_ru-RU') . ' = ' . $db->quote('[ЕРИП] Ожидание оплаты'))          ->where($db->quoteName('status_code') . ' = ' . $db->quote('A'));        $db->setQuery($query);        try {          $db->execute();        }        catch (RuntimeException $e) {          throw new RuntimeException('Erip order status cannot be updated!<br/>'.$e->getMessage());        }			}			else{
+        # update to have russian translation
+        $query->clear();
+        $query->update($db->quoteName('#__jshopping_order_status'))
+              ->set($db->quoteName('name_ru-RU') . ' = ' . $db->quote('[ЕРИП] Ожидание оплаты'))
+              ->where($db->quoteName('status_code') . ' = ' . $db->quote('A'));
+        $db->setQuery($query);
+        try {
+          $db->execute();
+        } catch (RuntimeException $e) {
+          throw new RuntimeException('Erip order status cannot be updated!<br/>'.$e->getMessage());
+        }
+      }	else{
 				throw new RuntimeException('Erip payment option can not be created!<br/>'.$move_folder);
 			}
 		}
